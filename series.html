@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>系列照片墙</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=ZCOOL+XiaoWei&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body
+    data-page="series"
+    data-csv="data/图片信息.csv"
+    data-default-series="村里老辈子"
+    data-photos-root="."
+  >
+    <header class="page-header">
+      <div class="wrap">
+        <a class="back-link" href="index.html">← 返回首页</a>
+        <h1 id="series-title">系列</h1>
+        <p id="series-meta"></p>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <div class="photo-grid" data-photo-grid></div>
+      <div class="empty-state" data-empty hidden>该系列暂无照片，请先更新 CSV。</div>
+      <div class="error-state" data-error hidden></div>
+    </main>
+
+    <footer>
+      <div class="wrap">提示：照片标题格式为 时间｜地点｜看点。</div>
+    </footer>
+
+    <script src="assets/app.js"></script>
+  </body>
+</html>

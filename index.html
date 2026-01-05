@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>村级在线博物馆</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=ZCOOL+XiaoWei&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body
+    data-page="index"
+    data-csv="data/图片信息.csv"
+    data-default-series="村里老辈子"
+    data-photos-root="."
+  >
+    <header class="site-header">
+      <div class="wrap">
+        <p class="eyebrow">Village Photo Archive</p>
+        <h1>村级在线博物馆</h1>
+        <p class="subtitle">
+          以系列为线索，把乡村影像整理成“可阅读的展览”。上传照片与 CSV 后，页面自动更新。
+        </p>
+        <div class="header-actions">
+          <a class="btn" data-primary-link href="series.html">进入系列</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="section">
+        <div class="section-header">
+          <div>
+            <h2>系列展柜</h2>
+            <p>每一个系列就是一段村庄记忆，点开即可进入照片墙。</p>
+          </div>
+          <p>数据来源：CSV</p>
+        </div>
+        <div class="series-grid" data-series-list></div>
+        <div class="empty-state" data-empty hidden>暂无系列内容，请先上传图片并更新 CSV。</div>
+        <div class="error-state" data-error hidden></div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">村级在线博物馆 · GitHub Pages 部署</div>
+    </footer>
+
+    <script src="assets/app.js"></script>
+  </body>
+</html>
