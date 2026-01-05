@@ -7,10 +7,10 @@
   const photosRoot = body.dataset.photosRoot || ".";
   const defaultSeries = body.dataset.defaultSeries || "默认系列";
 
-  const fallbackText = (value, fallback = "待补充") => {
-    const cleaned = String(value || "").trim();
-    return cleaned ? cleaned : fallback;
-  };
+  const cleanText = (value) => String(value || "").trim();
+
+  const joinNonEmpty = (parts, separator = "｜") =>
+    parts.map(cleanText).filter(Boolean).join(separator);
 
   const hasFileExt = (value) => /\.[a-zA-Z0-9]+$/.test(value);
 
@@ -137,22 +137,17 @@
         return {
           id,
           series,
-          time: row.time || "",
-          place: row.place || "",
-          highlight: row.highlight || "",
-          source: row.source || "",
+          time: cleanText(row.time),
+          place: cleanText(row.place),
+          highlight: cleanText(row.highlight),
+          source: cleanText(row.source),
           image: buildImagePath(id, series),
         };
       })
       .filter(Boolean);
   };
 
-  const titleForPhoto = (photo) => {
-    const time = fallbackText(photo.time);
-    const place = fallbackText(photo.place);
-    const highlight = fallbackText(photo.highlight);
-    return `${time}｜${place}｜${highlight}`;
-  };
+  const titleForPhoto = (photo) => joinNonEmpty([photo.time, photo.place, photo.highlight]);
 
   const pickFirst = (photos, key) => {
     for (const photo of photos) {
@@ -202,6 +197,9 @@
       const cover = group.items[0];
       const timeHint = pickFirst(group.items, "time");
       const placeHint = pickFirst(group.items, "place");
+      const metaLines = [`<span>共 ${count} 张</span>`];
+      if (timeHint) metaLines.push(`<span>时间 ${timeHint}</span>`);
+      if (placeHint) metaLines.push(`<span>地点 ${placeHint}</span>`);
 
       const card = document.createElement("a");
       card.className = "card";
@@ -215,9 +213,7 @@
         <div class="card-body">
           <h3>${group.key}</h3>
           <div class="meta">
-            <span>共 ${count} 张</span>
-            <span>${timeHint ? `时间 ${timeHint}` : "时间待补充"}</span>
-            <span>${placeHint ? `地点 ${placeHint}` : "地点待补充"}</span>
+            ${metaLines.join("")}
           </div>
           <div class="tag-row">
             <span class="tag">照片档案</span>
@@ -264,9 +260,10 @@
     const timeHint = pickFirst(filtered, "time");
     const placeHint = pickFirst(filtered, "place");
     if (metaEl) {
-      metaEl.textContent = `共 ${filtered.length} 张 · ${timeHint ? `时间 ${timeHint}` : "时间待补充"} · ${
-        placeHint ? `地点 ${placeHint}` : "地点待补充"
-      }`;
+      const parts = [`共 ${filtered.length} 张`];
+      if (timeHint) parts.push(`时间 ${timeHint}`);
+      if (placeHint) parts.push(`地点 ${placeHint}`);
+      metaEl.textContent = parts.join(" · ");
     }
 
     filtered.forEach((photo, index) => {
@@ -275,9 +272,11 @@
       card.href = `photo.html?s=${encodeURIComponent(seriesKey)}&id=${encodeURIComponent(photo.id)}`;
       card.style.setProperty("--delay", `${index * 30}ms`);
 
+      const caption = titleForPhoto(photo);
+      const altText = caption || photo.id;
       card.innerHTML = `
-        <img src="${encodeURI(photo.image)}" alt="${titleForPhoto(photo)}" loading="lazy" />
-        <div class="caption">${titleForPhoto(photo)}</div>
+        <img src="${encodeURI(photo.image)}" alt="${altText}" loading="lazy" />
+        ${caption ? `<div class="caption">${caption}</div>` : ""}
       `;
 
       const img = card.querySelector("img");
@@ -316,19 +315,31 @@
     const source = document.querySelector("#photo-source");
     const backLink = document.querySelector("#back-to-series");
 
+    const caption = titleForPhoto(photo);
     if (img) {
       img.src = encodeURI(photo.image);
-      img.alt = titleForPhoto(photo);
+      img.alt = caption || photo.id;
       img.addEventListener("error", () => {
         img.src = fallbackImage;
       });
     }
+    if (title && caption) title.textContent = caption;
 
-    if (title) title.textContent = titleForPhoto(photo);
-    if (time) time.textContent = fallbackText(photo.time);
-    if (place) place.textContent = fallbackText(photo.place);
-    if (highlight) highlight.textContent = fallbackText(photo.highlight);
-    if (source) source.textContent = fallbackText(photo.source, "待补充");
+    const setInfoRow = (el, value) => {
+      if (!el) return;
+      const text = cleanText(value);
+      const wrapper = el.closest("div");
+      if (!text) {
+        if (wrapper) wrapper.remove();
+        return;
+      }
+      el.textContent = text;
+    };
+
+    setInfoRow(time, photo.time);
+    setInfoRow(place, photo.place);
+    setInfoRow(highlight, photo.highlight);
+    setInfoRow(source, photo.source);
 
     if (backLink) {
       backLink.href = `series.html?s=${encodeURIComponent(seriesKey)}`;
