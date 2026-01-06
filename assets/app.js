@@ -182,15 +182,17 @@
   const renderIndex = (photos) => {
     const list = document.querySelector("[data-series-list]");
     const empty = document.querySelector("[data-empty]");
+    const primaryLink = document.querySelector("[data-primary-link]");
     if (!list) return;
 
     const groups = groupBySeries(photos);
     if (!groups.length) {
       if (empty) empty.hidden = false;
+      if (primaryLink) primaryLink.hidden = true;
       return;
     }
 
-    const primaryLink = document.querySelector("[data-primary-link]");
+    if (primaryLink) primaryLink.hidden = false;
 
     groups.forEach((group, index) => {
       const count = group.items.length;
