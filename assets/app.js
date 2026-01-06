@@ -252,13 +252,14 @@
 
     const filtered = photos.filter((photo) => photo.series === seriesKey);
 
-    if (titleEl) titleEl.textContent = seriesKey;
-
     if (!filtered.length) {
       if (empty) empty.hidden = false;
+      if (titleEl) titleEl.textContent = "内容整理中";
+      if (metaEl) metaEl.textContent = "";
       return;
     }
 
+    if (titleEl) titleEl.textContent = seriesKey;
     const timeHint = pickFirst(filtered, "time");
     const placeHint = pickFirst(filtered, "place");
     if (metaEl) {
